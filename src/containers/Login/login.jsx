@@ -1,17 +1,43 @@
 import React, { Component } from 'react';
-// import { Link } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Redirect } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { connect } from 'react-redux';
 
+import { createDemo1Action } from '../../redux/action_creators/test_action'
+import { reqLogin } from '../../api'
+import storageUtils from '../../utils/storageUtils';
 import logo from '../../assets/111.png';
 import './login.less';
 
 class Login extends Component {
-  onFinish = (values) => {
-    console.log(values);
+  onFinish = async (values) => {
+    const { username, password } = values
+    // reqLogin(username, password)
+    //   .then((result)=>{
+    //     console.log(result);
+    //   })
+    //   .catch((reason)=>{
+    //     console.log(reason);
+    //   })
+    let result = await reqLogin(username, password);
+    const { code, user, msg } = result;
+    if (code === 1) {
+      // localStorage.setItem('user_key', JSON.stringify(user))  // 保存登入用户的信息
+      storageUtils.saveUser(user)       // 使用定义的函数代替上面的代码
+      this.props.history.replace('/')   // 跳转到主页面
+    } else {
+      message.warning(msg, 1)
+    }
   };
 
   render() {
+      // const user = JSON.parse(localStorage.getItem('user_key') || '{}')
+      const user = storageUtils.getUser();
+      if (user.id) {
+        return <Redirect to='/'/>     //在render函数中, 只能使用路由标签, 自动跳转到指定的路由路径
+      }
+
     return (
       <div className="login">
         <div className="login-header">
@@ -49,7 +75,8 @@ class Login extends Component {
                 { required: true, message: 'Please input your Password!' },
                 { min: 4, message: '密码必须是大于4位数' },
                 { max: 12, message: '密码必须是小于等于12位数' },
-                { pattern: /^\w+$/, message: '密码只能是字母, 数字和下划线' },
+                // eslint-disable-next-line no-useless-escape
+                { pattern: /^[a-zA-Z0-9\.\_]{0,12}$/, message: '密码只能是字母, 数字,点和下划线' },
               ]}
             >
               <Input
@@ -75,4 +102,11 @@ class Login extends Component {
   }
 }
 
-export default Login;
+// export default Login;
+
+export default connect(
+  state => ({demo: state.demo}),
+  {
+    dongzuo: createDemo1Action,
+  }
+)(Login)
