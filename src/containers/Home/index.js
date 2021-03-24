@@ -1,13 +1,12 @@
 import React, { Component } from 'react';
+import './index';
 
-class Home extends Component {
-  render() { 
+export default class Home extends Component {
+  render() {
     return (
-      <div>
-        Home
+      <div className="home">
+        Home!!!
       </div>
     );
   }
 }
- 
-export default Home;
