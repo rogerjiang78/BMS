@@ -3,12 +3,15 @@ import { Link } from 'react-router-dom';
 import { Menu } from 'antd';
 import {
   HomeOutlined,
-  AppstoreOutlined,
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
+  AreaChartOutlined,
+  UnorderedListOutlined,
+  GoldOutlined,
   DesktopOutlined,
-  ContainerOutlined,
-  MailOutlined,
+  UserOutlined,
+  PushpinOutlined,
+  BarChartOutlined,
+  LineChartOutlined,
+  PieChartOutlined,
 } from '@ant-design/icons';
 
 import './index.less';
@@ -26,7 +29,7 @@ export default class LeftNav extends Component {
         </Link>
 
         <Menu
-          // defaultSelectedKeys={['1']}
+          // defaultSelectedKeys={['/home']}
           // defaultOpenKeys={['sub1']}
           mode="inline"
           theme="dark"
@@ -35,29 +38,30 @@ export default class LeftNav extends Component {
           <Menu.Item key="/home" icon={<HomeOutlined />}>
             <Link to="/home">首页</Link>
           </Menu.Item>
-          <Menu.Item key="/category" icon={<DesktopOutlined />}>
-            <Link to="/category">产品管理</Link>
-          </Menu.Item>
-          <Menu.Item key="3" icon={<ContainerOutlined />}>
-            Option 3
-          </Menu.Item>
-          <SubMenu key="sub1" icon={<MailOutlined />} title="Navigation One">
-            <Menu.Item key="5">Option 5</Menu.Item>
-            <Menu.Item key="6">Option 6</Menu.Item>
-            <Menu.Item key="7">Option 7</Menu.Item>
-            <Menu.Item key="8">Option 8</Menu.Item>
+          <SubMenu key="/prod_about" icon={<PushpinOutlined />} title="商品">
+            <Menu.Item key="/category" icon={<UnorderedListOutlined />}>
+              <Link to="/prod_about/category">分类管理</Link>
+            </Menu.Item>
+            <Menu.Item key="/product" icon={<GoldOutlined />}>
+              <Link to="/prod_about/product">商品管理</Link>
+            </Menu.Item>
           </SubMenu>
-          <SubMenu
-            key="sub2"
-            icon={<AppstoreOutlined />}
-            title="Navigation Two"
-          >
-            <Menu.Item key="9">Option 9</Menu.Item>
-            <Menu.Item key="10">Option 10</Menu.Item>
-            <SubMenu key="sub3" title="Submenu">
-              <Menu.Item key="11">Option 11</Menu.Item>
-              <Menu.Item key="12">Option 12</Menu.Item>
-            </SubMenu>
+          <Menu.Item key="/category" icon={<DesktopOutlined />}>
+            <Link to="/category">用户管理</Link>
+          </Menu.Item>
+          <Menu.Item key="/user" icon={<UserOutlined />}>
+            <Link to="/user">角色管理</Link>
+          </Menu.Item>
+          <SubMenu key="/charts" icon={<AreaChartOutlined />} title="图形图表">
+            <Menu.Item key="/bar" icon={<BarChartOutlined />}>
+              <Link to="/charts/bar">柱状图</Link>
+            </Menu.Item>
+            <Menu.Item key="/line" icon={<LineChartOutlined />}>
+              <Link to="/charts/line">折线图</Link>
+            </Menu.Item>
+            <Menu.Item key="/pie" icon={<PieChartOutlined />}>
+              <Link to="/charts/pie">饼状图</Link>
+            </Menu.Item>
           </SubMenu>
         </Menu>
       </div>

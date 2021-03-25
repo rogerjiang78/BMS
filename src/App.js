@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Empty from './containers/Empty';
-import Admin from './containers/Admin';
+import Admin from './containers/Admin/admin.jsx';
 // import Home from './containers/Home';
 import Login from './containers/Login/login';
 

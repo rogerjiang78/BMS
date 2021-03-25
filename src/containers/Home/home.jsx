@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import './index';
+import './home.less';
 
-export default class Home extends Component {
+export default class HOme extends Component {
   render() {
     return (
       <div className="home">
-        Home!!!
+        <h1>欢迎使用后台管理系统</h1>
       </div>
     );
   }

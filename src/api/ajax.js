@@ -40,6 +40,10 @@ instance.interceptors.response.use(
   (error) => {
     // return Promise.reject(error);        // 请求失败时执行, 返回一个reject状态的promise
     Nprogress.done();
+    if(error.response.status === 401) {     // 如果token失效了, 服务器会返回 401,通知用户重新登陆, 并删除本地之前保存的用户信息
+      message.error('身份验证失败,请重新登录', 1);
+      storageUtils.removeUser();
+    }
     message.error(error.message, 1);
     return new Promise(() => {}); // 中断了promise链
   },

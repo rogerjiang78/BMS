@@ -1,0 +1,42 @@
+.header {
+  background-color: white;
+  .head-top {
+    height: 40px;
+    border-bottom: 1px solid #1da57a;
+    text-align: right;
+    line-height: 40px;
+    .username {
+      margin: 0 0 0 8px;
+    }
+  }
+  .head-bottom {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    .head-bottom-left {
+      width: 25%;
+      text-align: center;
+      font-size: 25px;
+      position: relative;
+      &::before {
+        content: '';
+        border-top: 20px solid white;
+        border-right: 20px solid transparent;
+        border-bottom: 20px solid transparent;
+        border-left: 20px solid transparent;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 39px;
+      }
+    }
+    .head-bottom-right {
+      text-align: right;
+      width: 75%;
+      padding-right: 15px;
+      img {
+        margin: 0 5px;
+      }
+    }
+  }
+}
