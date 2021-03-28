@@ -23,11 +23,10 @@ class Login extends Component {
     //   })
     let result = await reqLogin(username, password);
     const { code, msg } = result;
-    // console.log(result);
     if (code === 1) {
       storageUtils.saveUser(result); // 使用定义的函数代替上面的代码
       this.props.saveUserInfo(result); // 从服务器返回的 user信息, 交给redux管理
-      this.props.history.replace('/'); // 跳转到主页面
+      this.props.history.replace('/'); // 跳转到admin主页面
     } else {
       message.warning(msg, 1);
     }

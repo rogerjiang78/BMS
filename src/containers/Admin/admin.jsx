@@ -5,7 +5,7 @@ import { Layout } from 'antd';
 
 // import { createSaveUserInfoAction } from '../../redux/action_creators/login_action'
 import storageUtils from '../../utils/storageUtils';
-import LeftNav from '../../components/Left-nav';
+import LeftNav from '../../components/Left-nav/leftNav';
 import Header from '../../components/Header/header';
 
 import Home from '../Home/home.jsx';
@@ -21,7 +21,6 @@ import './admin.less';
 
 const { Footer, Sider, Content } = Layout;
 class Admin extends Component {
-
   render() {
     const loginUser = storageUtils.getUser();
     // const { user } = this.props.userInfo;
