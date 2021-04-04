@@ -36,3 +36,6 @@ export const reqWeather = () => {
     })
   })
 }
+
+// 获取用户列表
+export const reqUserList = () => ajax.get(`${BASE_URL}/per/user`);

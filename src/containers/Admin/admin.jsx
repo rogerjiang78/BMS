@@ -11,6 +11,8 @@ import Header from '../../components/Header/header';
 import Home from '../Home/home.jsx';
 import Category from '../Category/category';
 import Product from '../Product/product';
+import Detail from '../Detail/detail';
+import AddUpdate from '../AddUpdate/addupdate';
 import Role from '../Role/role';
 import User from '../User/user';
 import Bar from '../Charts/Bar/bar';
@@ -39,7 +41,10 @@ class Admin extends Component {
             <Switch>
               <Route path="/home" component={Home} />
               <Route path="/prod_about/category" component={Category} />
-              <Route path="/prod_about/product" component={Product} />
+              <Route path="/prod_about/product" component={Product} exact/>
+              <Route path="/prod_about/product/detail/:id" component={Detail} />
+              <Route path="/prod_about/product/add_update" component={AddUpdate} exact/>
+              <Route path="/prod_about/product/add_update/:id" component={AddUpdate} />
               <Route path="/user" component={User} />
               <Route path="/role" component={Role} />
               <Route path="/charts/bar" component={Bar} />

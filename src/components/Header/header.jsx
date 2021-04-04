@@ -18,19 +18,25 @@ import './header.less';
 
 const { confirm } = Modal;
 
-@connect((state) => ({ userInfo: state.userInfo }), {
-  deleteUserInfo: deleteSaveUserInfoAction,
-})
+@connect(
+  (state) => ({
+    userInfo: state.userInfo,
+    title: state.title,
+  }),
+  {
+    deleteUserInfo: deleteSaveUserInfoAction,
+  },
+)
 @withRouter // 在非路由组件中, 要想使用路由组件的API, 就需要使用 withRouter包裹, 它是个高阶组件
 class Header extends Component {
-  constructor(props){
-    super(props)
+  constructor(props) {
+    super(props);
     this.state = {
       isFull: false,
       date: dayjs().format('YYYY年 MM月DD日 HH:mm:ss'),
       weatherInfo: {},
     };
-    this.headTitle = this.getTitle()
+    this.headTitle = this.getTitle();
   }
 
   fullScreen = () => {
@@ -44,9 +50,9 @@ class Header extends Component {
       let isFull = !this.state.isFull;
       this.setState({ isFull });
     });
-    this.timeId = setInterval(() => {
-      this.setState({ date: dayjs().format('YYYY年 MM月DD日 HH:mm:ss') });
-    }, 1000);
+    // this.timeId = setInterval(() => {
+    //   this.setState({ date: dayjs().format('YYYY年 MM月DD日 HH:mm:ss') });
+    // }, 1000);
     this.getWeather(); // 获取天气信息
   }
   // 设置实时的时间, 一定要取消定时器, 否则退出后, 系统无法得知就会报错
@@ -77,22 +83,24 @@ class Header extends Component {
     });
   };
 
-  getTitle = ()=>{
+  getTitle = () => {
     let pathKey = this.props.location.pathname;
-    console.log('----getTitle----');
+    if(pathKey.indexOf('product') !== -1) pathKey = '/prod_about/product';
+    // console.log('----getTitle----');
+
     let title = '';
-    menuList.forEach((item)=>{
+    menuList.forEach((item) => {
       if (item.children instanceof Array) {
-        let tmp = item.children.find((value)=>{
-          return pathKey === value.key
-        })
-        if(tmp) title = tmp.title
+        let tmp = item.children.find((value) => {
+          return pathKey === value.key;
+        });
+        if (tmp) title = tmp.title;
       } else {
-        if (pathKey === item.key) title = item.title
+        if (pathKey === item.key) title = item.title;
       }
-    })
+    });
     return title;
-  }
+  };
 
   render() {
     let { isFull, date, weatherInfo } = this.state;
@@ -110,7 +118,7 @@ class Header extends Component {
         </div>
         <div className="head-bottom">
           <div className="head-bottom-left">
-            {this.headTitle}
+            {this.props.title || this.headTitle}
           </div>
           <div className="head-bottom-right">
             {date}&nbsp;{weatherInfo.weather} 温度: {weatherInfo.minTemp} ~{' '}
