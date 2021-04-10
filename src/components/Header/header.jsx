@@ -84,19 +84,18 @@ class Header extends Component {
   };
 
   getTitle = () => {
-    let pathKey = this.props.location.pathname;
-    if(pathKey.indexOf('product') !== -1) pathKey = '/prod_about/product';
+    let { pathname } = this.props.location;
+    if(pathname.indexOf('product') !== -1) pathname = '/prod_about/product';
     // console.log('----getTitle----');
-
     let title = '';
     menuList.forEach((item) => {
       if (item.children instanceof Array) {
         let tmp = item.children.find((value) => {
-          return pathKey === value.key;
+          return pathname === value.key;
         });
         if (tmp) title = tmp.title;
       } else {
-        if (pathKey === item.key) title = item.title;
+        if (pathname === item.key) title = item.title;
       }
     });
     return title;

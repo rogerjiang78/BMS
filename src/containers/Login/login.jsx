@@ -12,25 +12,23 @@ import logo from '../../assets/111.png';
 import './login.less';
 
 class Login extends Component {
-  onFinish = async (values) => {
-    const { username, password } = values;
-    // reqLogin(username, password)
-    //   .then((result)=>{
-    //     console.log(result);
-    //   })
-    //   .catch((reason)=>{
-    //     console.log(reason);
-    //   })
+
+  onFinish = async (values) => {    // 表单的统一验证, 数据验证成功后回调事件
+    const { username, password } = values;  // 获取用户输入
     let result = await reqLogin(username, password);
     const { code, msg } = result;
     if (code === 1) {
-      storageUtils.saveUser(result); // 使用定义的函数代替上面的代码
+      storageUtils.saveUser(result);   // 使用定义的函数代替上面的代码
       this.props.saveUserInfo(result); // 从服务器返回的 user信息, 交给redux管理
       this.props.history.replace('/'); // 跳转到admin主页面
     } else {
-      message.warning(msg, 1);
+      message.warning(msg, 1);        // 登录失败
     }
   };
+
+  onFinishFailed = () => { // 表单的统一验证, 数据验证失败后回调事件
+    message.error('登入信息错误', 1)
+  }
 
   render() {
     // const user = JSON.parse(localStorage.getItem('user_key') || '{}')
@@ -55,6 +53,7 @@ class Login extends Component {
               remember: true,
             }}
             onFinish={this.onFinish}
+            onFinishFailed={this.onFinishFailed}
           >
             <Form.Item
               name="username"

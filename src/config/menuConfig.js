@@ -24,7 +24,7 @@ const menuList = [
     children: [
       //子菜单列表
       {
-        title: '品类管理',
+        title: '分类管理',
         key: '/prod_about/category',
         icon: <MailOutlined />,
       },

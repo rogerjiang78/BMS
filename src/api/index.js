@@ -37,5 +37,33 @@ export const reqWeather = () => {
   })
 }
 
+// 获取分类列表
+export const reqCategoryList = () => ajax.get(`${BASE_URL}/xxx/category`);
+
+// 添加分类
+export const reqAddCategory = (categoryName) => ajax.post(`${BASE_URL}/xxx/category/add`, {categoryName})
+
+// 修改分类
+export const reqUpdateCategory = ({categoryId, categoryName}) => ajax.post(`${BASE_URL}/xxx/category/add`, {categoryId, categoryName})
+
+// 获取商品分页列表
+export const reqProductList = (productId, status) => ajax.post(`${BASE_URL}/xxx/product/updateStatus`, {productId, status})
+
+// 请求商品在售状态
+export const reqUpdateProductStatus = (pageNum, pageSize) => ajax.get(`${BASE_URL}/xxx/product/list`, {params:{pageNum, pageSize}})
+
+// 请求商品搜索分页列表
+export const reqSearchProduct = (pageNum, pageSize, searchType, keyWord) => {
+  // if (searchType === 'productName') ajax.get(`${BASE_URL}/xxx/product/search`, {params:{pageNum, pageSize, productName: keyWord}});
+  // if (searchType === 'productDesc') ajax.get(`${BASE_URL}/xxx/product/search`, {params:{pageNum, pageSize, productDesc: keyWord}});
+  ajax.get(`${BASE_URL}/xxx/product/search`, {params:{pageNum, pageSize, [searchType]: keyWord}});
+}
+
+// 根据商品id, 获取商品信息
+export const reqProductById = (productId) => ajax.get(`${BASE_URL}/xxx/product/info`, {params:{productId}});
+
 // 获取用户列表
 export const reqUserList = () => ajax.get(`${BASE_URL}/per/user`);
+
+// 获取角色列表
+export const reqRoleList = () => ajax.get(`${BASE_URL}/per/role`);

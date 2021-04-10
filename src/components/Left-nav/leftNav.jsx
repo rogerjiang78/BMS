@@ -21,8 +21,9 @@ class LeftNav extends Component {
     super(props);
     this.menuNode = this.getMenuNodes(menuList);
   }
-  getMenuNodes = (lists) => {
-    return lists.map((item) => {
+  // 用于创建菜单的函数
+  getMenuNodes = (list) => {
+    return list.map((item) => {
       if (!item.children) {
         return (
           <Menu.Item

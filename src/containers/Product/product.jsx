@@ -3,69 +3,77 @@ import { Card, Button, Select, Input, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
 
-import {createSaveProductAction} from '../../redux/action_creators/product_action'
+import { createSaveProductAction } from '../../redux/action_creators/product_action';
+import {
+  reqProductList,
+  reqSearchProduct,
+  reqUpdateProductStatus,
+} from '../../api';
+import { PAGE_SIZE } from '../../config';
 const { Option } = Select;
 
-@connect(
-  state => ({}),
-  {
-    saveProduct: createSaveProductAction
-  }
-)
+@connect((state) => ({}), { saveProduct: createSaveProductAction })
 class Product extends Component {
   state = {
-    productList: [],
-    current: 1,
-    total: '',
-    keyWord: '',
-    searchType: 'name',
+    productList: [], // 商品分页列表数据
+    current: 1, // 当前所在的页
+    total: 0, // 数据总数
+    keyWord: '', // 搜索关键字
+    searchType: 'productName', // 搜索类型
   };
 
   componentDidMount() {
     // this.getProductList()
   }
 
-  // 将初始化和搜索商品列表合并在一起
-  getProductList = async (number = 1) => {
+  // 将初始化和搜索商品列表合并在一起, 使代码可以复用
+  getProductList = async (pageNum = 1) => {
     let result;
     if (this.isSearch) {
-      // const {searchType, keyWord} = this.state
-      // result = await reqSearchProduct(number, 5, searchType, keyWord)
+      let { searchType, keyWord } = this.state;
+      result = await reqSearchProduct(pageNum, PAGE_SIZE, searchType, keyWord);
     } else {
-      // result = await reqProductList(number, 5)
+      result = await reqProductList(pageNum, PAGE_SIZE);
     }
-    const { data } = result;
-    this.setState({
-      productList: data.list,
-      total: data.total,
-      current: data.pageNum,
-    });
-    // 把获取的商品列表存入redux
-    this.props.saveProduct(data.list)
+    // 取出数据
+    const { status, data } = result;
+    if (status === 1) {
+      this.setState({
+        // 更新状态
+        productList: data.list,
+        total: data.total,
+        current: pageNum,                   // 存储当前页, 以供其它函数使用
+      });
+    } else message.error('加载数据出错了!');
+    this.props.saveProduct(data.list);     // 把获取到的商品信息列表存入到redux中
   };
 
   search = () => {
-    this.isSearch = true;
-    this.getProductList();
+    console.log(this.state.keyWord, this.state.searchType);
+    this.isSearch = true; // 向组件实例添加一个属性
+    // this.getProductList();
   };
 
-  updateProductStatus = async ({key, status }) => {
-    if (status === 1) status = 0;             // 改变销售状态
-    else status = 1;
-    console.log(status);
-    // let result = await reqUpdateProductStatus(id, status)
-    let newProductList = [...this.state.productList]
-    if(status === 0) {
-      message.success('状态更新成功!',1)
+  updateProductStatus = async (item) => {
+    console.log(item);
+    let { key, status } = item;
+    status = status === 1 ? 0 : 1; // 改变销售状态 , 1: 在售; 0: 停售
+    // if (status === 1) status = 0;
+    // else status = 1;
+    // state值是对象或数组时,需要使用扩展运算符复制一份, 再进行修改
+    let newProductList = [...this.state.productList];
+    let result = await reqUpdateProductStatus(key, status);
+    if (result.status === 0) {
+      message.success('状态更新成功!', 1);
       newProductList = newProductList.map((item) => {
-        if(item.key === key) {
-          item.status = status
+        if (item.key === key) {
+          item.status = status;
         }
-        return item
-      })
-      this.setState({newProductList})
-    }
-    else message.success('跟新状态失败!',1)
+        return item;
+      });
+      this.setState({ productList: newProductList });
+      // this.getProductList(this.state.current);         //如果数据不多, 可以直接发ajax请求.重新获取一遍数据, 注意要获取当前页的显示
+    } else message.error('跟新状态失败!', 1);
   };
 
   render() {
@@ -82,9 +90,38 @@ class Product extends Component {
         name: '苹果',
         desc: '尖峰科技',
         price: '7999',
+        status: 1,
+      },
+      {
+        key: '3',
+        name: '小米',
+        desc: '性价比高',
+        price: '2999',
+        status: 1,
+      },
+      {
+        key: '4',
+        name: 'OPPO',
+        desc: '实惠产品',
+        price: '3999',
         status: 0,
       },
+      {
+        key: '5',
+        name: 'VIVO',
+        desc: '不俗科技',
+        price: '4999',
+        status: 1,
+      },
+      {
+        key: '6',
+        name: '三星',
+        desc: '海外大厂',
+        price: '5949',
+        status: 1,
+      },
     ];
+
     const columns = [
       {
         title: '商品名称',
@@ -102,7 +139,7 @@ class Product extends Component {
         dataIndex: 'price',
         key: 'price',
         align: 'center',
-        width: '10%',
+        width: '15%',
         render: (price) => '$ ' + price,
       },
       {
@@ -110,7 +147,7 @@ class Product extends Component {
         // dataIndex: 'status',
         key: 'status',
         align: 'center',
-        width: '10%',
+        width: '15%',
         render: (item) => {
           return (
             <div>
@@ -124,7 +161,7 @@ class Product extends Component {
               </Button>
               <br />
               <span>{item.status === 1 ? '在售' : '已停售'}</span>
-            </div>
+            </div> // status 是表示商品的销售状况, 1: 在售; 0: 停售
           );
         },
       },
@@ -133,49 +170,64 @@ class Product extends Component {
         // dataIndex: 'opera',
         key: 'opera',
         align: 'center',
-        width: '10%',
+        width: '15%',
         render: (item) => {
           return (
             <div>
-              <Button type="link" onClick={()=>{this.props.history.push(`/prod_about/product/detail/${item.key}`)}}
-              >详情</Button>
+              <Button type="link"
+                onClick={() => {this.props.history.push(`/prod_about/product/detail/${item.key}`, item)}}
+              >
+                详情
+              </Button>
               <br />
-              <Button type="link" onClick={()=>{this.props.history.push(`/prod_about/product/add_update/${item.key}`)}}
-              >修改</Button>
+              <Button type="link"
+                onClick={() => {
+                  this.props.history.push(
+                    `/prod_about/product/add_update/${item.key}`,
+                  );
+                }}
+              >
+                修改
+              </Button>
             </div>
           );
         },
       },
     ];
 
+    const title = (
+      <div>
+        <Select
+          style={{ width: '15%' }}
+          defaultValue="productName"
+          onChange={(value) => this.setState({ searchType: value })} // 受控组件
+        >
+          <Option value="productName">按名称搜索</Option>
+          <Option value="productDesc">按描述搜索</Option>
+        </Select>
+        <Input
+          style={{ width: '25%', margin: '0 10px' }}
+          placeholder="请输入关键字"
+          allowClear // 可以清空输入框的图标
+          onChange={(event) => this.setState({ keyWord: event.target.value })} // 受控组件,
+        />
+        <Button type="primary" onClick={this.search}>
+          搜索
+        </Button>
+      </div>
+    );
+
     return (
       <div>
         <Card
-          title={
-            <div>
-              <Select
-                defaultValue="name"
-                style={{ width: 150 }}
-                onChange={(value) => this.setState({ searchType: value })}
-              >
-                <Option value="name">按名称搜索</Option>
-                <Option value="desc">按描述搜索</Option>
-              </Select>
-              <Input
-                placeholder="请输入关键字"
-                style={{ width: '25%', margin: '0 10px' }}
-                allowClear
-                onChange={(event) =>
-                  this.setState({ keyWord: event.target.value })
-                }
-              />
-              <Button type="primary" onClick={this.search}>
-                搜索
-              </Button>
-            </div>
-          }
+          title={title}
           extra={
-            <Button type="primary" onClick={()=>{this.props.history.push('/prod_about/product/add_update')}}>
+            <Button
+              type="primary"
+              onClick={() =>
+                this.props.history.push('/prod_about/product/add_update')
+              }
+            >
               <PlusOutlined />
               添加商品
             </Button>
@@ -188,7 +240,7 @@ class Product extends Component {
             // rowKey='id'
             pagination={{
               total: this.state.total,
-              pageSize: 5,
+              pageSize: PAGE_SIZE,
               current: this.state.current,
               onChange: this.getProductList,
             }}
@@ -199,4 +251,4 @@ class Product extends Component {
   }
 }
 
-export default Product
+export default Product;

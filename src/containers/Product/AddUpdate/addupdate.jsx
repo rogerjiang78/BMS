@@ -19,20 +19,7 @@ class AddUpdate extends Component {
     console.log('Success:', { ...values, imgs, detail });
   };
 
-  onFinishFailed = (error) => {
-    console.log('Failed:', error);
-    if (error) return;
-  };
   render() {
-    const layout = {
-      labelCol: {
-        span: 2,
-      },
-      wrapperCol: {
-        span: 9,
-      },
-    };
-
     return (
       <div>
         <Card
@@ -51,30 +38,31 @@ class AddUpdate extends Component {
           }
         >
           <Form
-            {...layout}
+            labelCol={{ span: 3 }}
+            wrapperCol={{ span: 9 }}
             name="add_product"
             initialValues={{
               remember: true,
             }}
             onFinish={this.onFinish}
-            onFinishFailed={this.onFinishFailed}
           >
-            <Item label="商品名称" name="name"
-              initialValue=''
+            <Item
+              label="商品名称"
+              name="name"
+              initialValue=""
               rules={[{ required: true, message: '请输入商品名称' }]}
             >
               <Input placeholder="请输入商品名称" />
             </Item>
-            <Item label="商品描述" name="desc"
-              initialValue=''
+            <Item
+              label="商品描述"
+              name="desc"
+              initialValue=""
               rules={[{ required: true, message: '请输入商品描述' }]}
             >
               <Input placeholder="请输入商品描述" />
             </Item>
-            <Item label="商品价格" name="price"
-              initialValue=''
-              required
-            >
+            <Item label="商品价格" name="price" initialValue="" required>
               <Input
                 prefix="$"
                 suffix="元"
@@ -82,10 +70,7 @@ class AddUpdate extends Component {
                 placeholder="请输入商品价格"
               />
             </Item>
-            <Item label="商品分类" name="category"
-              initialValue=''
-              required
-            >
+            <Item label="商品分类" name="category" initialValue="" required>
               <Select placeholder="请选择分类">
                 <Option value="demo">Demo</Option>
               </Select>
