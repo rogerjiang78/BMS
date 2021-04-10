@@ -12,7 +12,7 @@ import Home from '../Home/home.jsx';
 import Category from '../Category/category';
 import Product from '../Product/product';
 import Detail from '../Product/Detail/detail';
-import AddUpdate from '../AddUpdate/addupdate';
+import AddUpdate from '../Product/AddUpdate/addupdate';
 import Role from '../Role/role';
 import User from '../User/user';
 import Bar from '../Charts/Bar/bar';

@@ -50,7 +50,7 @@ class Product extends Component {
 
   search = () => {
     console.log(this.state.keyWord, this.state.searchType);
-    this.isSearch = true; // 向组件实例添加一个属性
+    this.isSearch = true;  // 向组件实例添加一个属性, 由于我们不需要使用它来显示,所以就不需要存储到state中
     // this.getProductList();
   };
 
@@ -180,11 +180,8 @@ class Product extends Component {
                 详情
               </Button>
               <br />
-              <Button type="link"
-                onClick={() => {
-                  this.props.history.push(
-                    `/prod_about/product/add_update/${item.key}`,
-                  );
+              <Button type="link" onClick={() => {
+                  this.props.history.push(`/prod_about/product/add_update/${item.key}`, item);
                 }}
               >
                 修改

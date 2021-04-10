@@ -12,8 +12,8 @@ import logo from '../../assets/111.png';
 import './login.less';
 
 class Login extends Component {
-
-  onFinish = async (values) => {    // 表单的统一验证, 数据验证成功后回调事件
+  // 表单的统一验证, 数据验证成功后回调事件
+  onFinish = async (values) => {
     const { username, password } = values;  // 获取用户输入
     let result = await reqLogin(username, password);
     const { code, msg } = result;
