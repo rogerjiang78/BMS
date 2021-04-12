@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 
 // import { BASE_IMG } from '../../../config'
 import { reqProductById, reqCategoryList } from '../../../api'
+
 import './detail.less';
 
 @connect(
@@ -136,7 +137,7 @@ class Detail extends Component {
                   />
                   {/* {
                     imgs.map((item, index) => {
-                      return <img key={index} src={BASE_IMG + item} alt="productPhoto" />
+                      return <img key={index} src={BASE_IMG + item} alt="productPhoto" style={{width: '200px'}}/>
                     })
                   } */}
                 </span>

@@ -7,13 +7,15 @@ import menuList from '../../config/menuConfig';
 const { Item } = Form;
 
 export default class Role extends Component {
+  formRef = React.createRef()
+
   state = {
-    isShowAdd: false,
-    isShowAuth: false,
-    roleList: [],
+    isShowAdd: false,    // 是否显示添加界面
+    isShowAuth: false,   // 是否显示权限界面
+    roleList: [],        // 所有角色的列表
     menuList,
-    checkedKeys: [],
-    id: '',    // 当前操作的角色的 id
+    checkedKeys: [],    //
+    id: '',            // 当前操作的角色的 id
   };
 
   componentDidMount() {
@@ -24,11 +26,16 @@ export default class Role extends Component {
     let roleList = await reqRoleList();
     console.log(roleList);
     if (roleList) this.setState({ roleList });
-  };
+  }
+
   // 新增角色确认按钮
-  handleOk = () => {
-    console.log('点确认按钮了');
-    // const {id} = this.state;
+  handleOk = async () => {
+    const value = await this.formRef.current.validateFields(); // 从 Modal中获取Form表单中的数据
+    console.log('点确认按钮了', value);
+    // const result = await reqAddRole(value.name)
+    // if (result.status === 1) message.success('添加角色成功')
+    // else message.error('添加角色失败');
+    // this.getRoleList();                   // 显示最新的列表
     this.setState({ isShowAdd: false });
   };
   // 新增角色取消按钮
@@ -37,12 +44,24 @@ export default class Role extends Component {
     this.setState({ isShowAdd: false });
   };
 
-  // 新增角色确认按钮
+  // 显示授权弹窗的界面
+  showAuth =(item) => {
+    this.role = item;           // 将当前需要设置的角色保存到组件
+    const menus = item.menus;   // 将选中角色所拥有的选项, 回显出来
+    this.setState({
+      isShowAuth: true,
+      checkedKeys: menus,
+    });
+  }
+
+  // 授权弹窗的确认按钮, 进行勾选操作时的回调
   handleAuthOk = () => {
     console.log('点确认按钮了');
-    this.setState({ isShowAuth: false });
-  };
-  // 新增角色取消按钮
+    this.setState({
+      isShowAuth: false
+    });
+  }
+  // 授权弹窗的取消按钮
   handleAuthCancel = () => {
     console.log('点取消按钮了');
     this.setState({ isShowAuth: false });
@@ -50,20 +69,12 @@ export default class Role extends Component {
 
   onCheck = (checkedKeysValue) => {
     console.log('onCheck', checkedKeysValue);
-    this.setState({
-      checkedKeys: checkedKeysValue,
-    });
-  };
-
-  showAuth =(id) => {
-    this.setState({ isShowAuth: true });
-  }
-  onFinish = async (values) => {
-    // const { username, password } = values;
+    this.setState({checkedKeys: checkedKeysValue});
   };
 
   render() {
     const { roleList, menuList } = this.state;
+    const role = this.role || {};
     // const dataSource = [
     //   {
     //     key: '1',
@@ -88,14 +99,14 @@ export default class Role extends Component {
         key: 'name',
       },
       {
-        title: '创建时间',
-        dataIndex: 'subon',
-        key: ' subon',
-      },
-      {
         title: '角色描述',
         dataIndex: 'des',
         key: 'des',
+      },
+      {
+        title: '创建时间',
+        dataIndex: 'subon',
+        key: 'subon',
       },
       {
         title: '授权人',
@@ -108,15 +119,10 @@ export default class Role extends Component {
         // key: 'id',
         width: '25%',
         align: 'center',
-        render: () => {
+        render: (item) => {
           return (
             <div>
-              <Button
-                type="link"
-                onClick={(item) => {this.showAuth(item.id)}}
-              >
-                设置权限
-              </Button>
+              <Button type="link" onClick={() => {this.showAuth(item)}}>设置权限</Button>
             </div>
           );
         },
@@ -135,14 +141,8 @@ export default class Role extends Component {
       <div>
         <Card
           title={
-            <Button
-              type="primary"
-              onClick={() => {
-                this.setState({ isShowAdd: true });
-              }}
-            >
-              <PlusOutlined />
-              新增角色
+            <Button type="primary" onClick={() => {this.setState({ isShowAdd: true })}}>
+              <PlusOutlined />新增角色
             </Button>
           }
         >
@@ -161,17 +161,18 @@ export default class Role extends Component {
           visible={this.state.isShowAdd}
           onOk={this.handleOk}
           onCancel={this.handleCancel}
+          destroyOnClose
         >
           <Form
-            name="roleName"
+            name="role_name"
             // className="login-form"
             initialValues={{
               remember: true,
             }}
-            onFinish={this.onFinish}
+            ref={this.formRef}
           >
             <Item
-              name="username"
+              name="roleName"
               rules={[
                 { required: true, message: 'Please input your Username!' },
               ]}
@@ -187,9 +188,12 @@ export default class Role extends Component {
           onOk={this.handleAuthOk}
           onCancel={this.handleAuthCancel}
         >
+          <Item label="当前角色名称: ">
+            <Input value={role.name} disabled/>
+          </Item>
           <Tree
-            checkable // 允许选中
-            defaultExpandAll
+            checkable               // 允许选中
+            defaultExpandAll        // 默认展开所有选择项
             // onExpand={this.onExpand} // 收缩或展开菜单的回调
             // expandedKeys={this.state.expandedKeys}   // 初始展开的节点, 可以使用默认展开所有树节点替代
             // autoExpandParent={this.state.autoExpandParent}

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Card, Button, Select, Input, Table, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { connect } from 'react-redux';
+import throttle from 'lodash/throttle';
 
 import { createSaveProductAction } from '../../redux/action_creators/product_action';
 import {
@@ -42,19 +43,20 @@ class Product extends Component {
         // 更新状态
         productList: data.list,
         total: data.total,
-        current: pageNum,                   // 存储当前页, 以供其它函数使用
+        current: pageNum, // 存储当前页, 以供其它函数使用
       });
     } else message.error('加载数据出错了!');
-    this.props.saveProduct(data.list);     // 把获取到的商品信息列表存入到redux中
+    this.props.saveProduct(data.list); // 把获取到的商品信息列表存入到redux中
   };
 
   search = () => {
     console.log(this.state.keyWord, this.state.searchType);
-    this.isSearch = true;  // 向组件实例添加一个属性, 由于我们不需要使用它来显示,所以就不需要存储到state中
+    this.isSearch = true; // 向组件实例添加一个属性, 由于我们不需要使用它来显示,所以就不需要存储到state中
     // this.getProductList();
   };
 
-  updateProductStatus = async (item) => {
+  // 使用 throttle节流函数进行包装, 控制过于频繁的切换状态
+  updateProductStatus = throttle(async (item) => {
     console.log(item);
     let { key, status } = item;
     status = status === 1 ? 0 : 1; // 改变销售状态 , 1: 在售; 0: 停售
@@ -74,7 +76,7 @@ class Product extends Component {
       this.setState({ productList: newProductList });
       // this.getProductList(this.state.current);         //如果数据不多, 可以直接发ajax请求.重新获取一遍数据, 注意要获取当前页的显示
     } else message.error('跟新状态失败!', 1);
-  };
+  }, 2000);
 
   render() {
     const dataSource = [
@@ -175,13 +177,15 @@ class Product extends Component {
           return (
             <div>
               <Button type="link"
-                onClick={() => {this.props.history.push(`/prod_about/product/detail/${item.key}`, item)}}
+                onClick={() => {this.props.history.push(`/prod_about/product/detail/${item.key}`,item);
+                }}
               >
                 详情
               </Button>
               <br />
-              <Button type="link" onClick={() => {
-                  this.props.history.push(`/prod_about/product/add_update/${item.key}`, item);
+              <Button
+                type="link"
+                onClick={() => {this.props.history.push(`/prod_about/product/add_update/${item.key}`,item);
                 }}
               >
                 修改
