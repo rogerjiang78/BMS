@@ -62,8 +62,21 @@ export const reqSearchProduct = (pageNum, pageSize, searchType, keyWord) => {
 // 根据商品id, 获取商品信息
 export const reqProductById = (productId) => ajax.get(`${BASE_URL}/xxx/product/info`, {params:{productId}});
 
+// 删除图片文件
+export const reqDeleteImg = (name) => ajax.post(`${BASE_URL}/xxx/img/delete`, {name})
+
+// 添加/修改商品
+// export const reqAddUpdateProduct = ({product}) => ajax.post(BASE_URL+'/xxx/product/'+(product.id ? 'update' : 'add'), {product})
+export const reqAddUpdateProduct = (productObj) => ajax.post(`${BASE_URL}'/xxx/product/'${productObj.id ? 'update' : 'add'}`, {...productObj})
+
+// 获取所有角色列表
+export const reqRoleList = () => ajax.get(`${BASE_URL}/per/role`);
+
+// 添加角色
+export const reqAddRole = (roleName) => ajax.post(`${BASE_URL}/xxx/role/add`, {roleName});
+
+// 更新角色
+export const reqUpdateRole = (role) => ajax.put(`${BASE_URL}/xxx/role/update`, {...role});
+
 // 获取用户列表
 export const reqUserList = () => ajax.get(`${BASE_URL}/per/user`);
-
-// 获取角色列表
-export const reqRoleList = () => ajax.get(`${BASE_URL}/per/role`);
