@@ -11,7 +11,10 @@ import logo from '../../assets/111.png';
 
 const { SubMenu } = Menu;
 
-@connect((state) => ({}), {
+@connect(
+  // (state) => ({menus: state.userInfo.user.role.menus}),
+  (state) => ({user: state.userInfo.user.username}),
+  {
   saveTitle: createSaveTitleAction,
 })
 @withRouter
@@ -24,26 +27,42 @@ class LeftNav extends Component {
   // 用于创建菜单的函数
   getMenuNodes = (list) => {
     return list.map((item) => {
-      if (!item.children) {
+      if (this.hasAuth(item)) {   // 判断当前用户是否有此item对应的权限
+        if (!item.children) {
+          return (
+            <Menu.Item
+              key={item.key}
+              icon={item.icon}
+              onClick={() => {this.props.saveTitle(item.title)}}
+            >
+              <Link to={item.key}>{item.title}</Link>
+            </Menu.Item>
+          );
+        }
         return (
-          <Menu.Item
-            key={item.key}
-            icon={item.icon}
-            onClick={() => {
-              this.props.saveTitle(item.title);
-            }}
-          >
-            <Link to={item.key}>{item.title}</Link>
-          </Menu.Item>
+          <SubMenu key={item.key} icon={item.icon} title={item.title}>
+            {this.getMenuNodes(item.children)}
+          </SubMenu>
         );
       }
-      return (
-        <SubMenu key={item.key} icon={item.icon} title={item.title}>
-          {this.getMenuNodes(item.children)}
-        </SubMenu>
-      );
+      else return null
     });
   };
+
+  // 根据当前用户所拥有的menus, 展示相应的节点
+  hasAuth = (item) => {
+    console.log(item);            // 是指 menuList中的一个个子节点
+    // const {  user, menus } = this.props;   // 得到当前用户以及他的所有权限
+    // // 如果当前用户是admin, 或者item是公开的, 或者当前用户的一级菜单有此item的权限, 返回true
+    // if (user.username === 'admin' || item.public || menus.indexOf(item.key) !== -1) {
+    //   return true
+    // }
+    // // 当前用户的一个菜单的子节点有此item的权限, 当前 item 也应该返回true
+    // else if (item.children) {
+    //   return menus.some((cItem) => item.children.key === cItem)
+    // }
+    return true
+  }
 
   render() {
     const selectedKey = this.props.location.pathname;

@@ -75,8 +75,14 @@ export const reqRoleList = () => ajax.get(`${BASE_URL}/per/role`);
 // 添加角色
 export const reqAddRole = (roleName) => ajax.post(`${BASE_URL}/xxx/role/add`, {roleName});
 
-// 更新角色
-export const reqUpdateRole = (role) => ajax.put(`${BASE_URL}/xxx/role/update`, {...role});
+// 更新角色权限
+export const reqUpdateRole = (roleObj) => ajax.post(`${BASE_URL}/xxx/role/update`, {...roleObj});
 
 // 获取用户列表
 export const reqUserList = () => ajax.get(`${BASE_URL}/per/user`);
+
+// 获取用户角色关联列表
+export const reqUserRoleList = () => ajax.get(`${BASE_URL}/per/user_role`);
+
+// 添加用户
+export const reqAddUser = (userObj) => ajax.post(`${BASE_URL}/xxx/user/add`, {...userObj});

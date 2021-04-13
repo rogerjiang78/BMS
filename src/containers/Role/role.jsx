@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { Card, Table, Button, Modal, Form, Input, Tree } from 'antd';
+import { Card, Table, Button, Modal, Form, Input, Tree, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { reqRoleList } from '../../api';
+import { reqRoleList, reqUpdateRole } from '../../api';
 import menuList from '../../config/menuConfig';
+import getUser from '../../utils/storageUtils'
 
 const { Item } = Form;
 
@@ -12,9 +13,9 @@ export default class Role extends Component {
   state = {
     isShowAdd: false,    // 是否显示添加界面
     isShowAuth: false,   // 是否显示权限界面
+    checkedKeys: [],     // 保存所有选中的节点
     roleList: [],        // 所有角色的列表
-    menuList,
-    checkedKeys: [],    //
+    menuList: menuList,
     id: '',            // 当前操作的角色的 id
   };
 
@@ -26,6 +27,12 @@ export default class Role extends Component {
     let roleList = await reqRoleList();
     console.log(roleList);
     if (roleList) this.setState({ roleList });
+  }
+
+  // 用于展示新增角色弹窗的界面,
+  showAdd = () => {
+    this.setState({ isShowAdd: true})
+    // this.formRef.current.resetFields();    // 清空之前的数据
   }
 
   // 新增角色确认按钮
@@ -44,22 +51,34 @@ export default class Role extends Component {
     this.setState({ isShowAdd: false });
   };
 
-  // 显示授权弹窗的界面
+  // 用于展示授权弹窗的界面, 在这里设置回显
   showAuth =(item) => {
-    this.role = item;           // 将当前需要设置的角色保存到组件
-    const menus = item.menus;   // 将选中角色所拥有的选项, 回显出来
-    this.setState({
-      isShowAuth: true,
-      checkedKeys: menus,
-    });
+    this.setState({isShowAuth: true});      // 显示授权弹窗的界面
+    this.role = item;                       // 将当前需要设置的角色保存到组件
+    const { id } = item;                    // 将选中角色所拥有的选项, 回显出来
+    const {roleList} = this.state;           // 从状态中获取最新的角色列表,
+    let result = roleList.find((role) => {    // 根据id得到当前角色的menus, 用于回显
+      return role.id = id
+    })
+    if (result) {
+      this.setState({checkedKeys: result.menus,})
+    }
   }
 
   // 授权弹窗的确认按钮, 进行勾选操作时的回调
-  handleAuthOk = () => {
+  handleAuthOk = async() => {
     console.log('点确认按钮了');
-    this.setState({
-      isShowAuth: false
-    });
+    const {id, checkedKeys} = this.state;
+    let auth_time = Date.now();
+    let auth_name  = getUser().username;
+    const roleObj = {id, menus:checkedKeys, auth_time, auth_name};
+    const result = await reqUpdateRole(roleObj)
+    if (result.status === 1) {
+      message.success('修改角色成功', 1)
+      this.setState({isShowAuth: false});
+      this.getRoleList();
+    }
+    else message.error('添加角色失败');
   }
   // 授权弹窗的取消按钮
   handleAuthCancel = () => {
@@ -131,7 +150,7 @@ export default class Role extends Component {
 
     const treeData = [
       {
-        title: '平台功能',
+        title: '平台权限',
         key: 'top',
         children: menuList,
       },
@@ -141,7 +160,7 @@ export default class Role extends Component {
       <div>
         <Card
           title={
-            <Button type="primary" onClick={() => {this.setState({ isShowAdd: true })}}>
+            <Button type="primary" onClick={this.showAdd}>
               <PlusOutlined />新增角色
             </Button>
           }
@@ -192,11 +211,11 @@ export default class Role extends Component {
             <Input value={role.name} disabled/>
           </Item>
           <Tree
-            checkable               // 允许选中
-            defaultExpandAll        // 默认展开所有选择项
-            // onExpand={this.onExpand} // 收缩或展开菜单的回调
-            // expandedKeys={this.state.expandedKeys}   // 初始展开的节点, 可以使用默认展开所有树节点替代
-            // autoExpandParent={this.state.autoExpandParent}
+            checkable                   // 允许选中的选择框
+            defaultExpandAll            // 默认展开所有选择项
+            // onExpand={this.onExpand} // 收缩或展开菜单的回调函数
+            // expandedKeys={this.state.expandedKeys}         // 初始展开的节点, 可以使用默认展开所有树节点替代
+            // autoExpandParent={this.state.autoExpandParent} // 当所有子节点被选中,自动打开父节点
             onCheck={this.onCheck}
             checkedKeys={this.state.checkedKeys}
             treeData={treeData}
